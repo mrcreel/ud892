@@ -1,15 +1,17 @@
 /*eslint-env node*/
 
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var eslint = require('gulp-eslint');
-var browserSync = require('browser-sync').create();
-var jasmine = require('gulp-jasmine-phantom');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var babel = require('gulp-babel');
-var sourcemaps = require('gulp-sourcemaps');
+const gulp = require('gulp');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const eslint = require('gulp-eslint');
+const browserSync = require('browser-sync').create();
+const jasmine = require('gulp-jasmine-phantom');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const babel = require('gulp-babel');
+const sourcemaps = require('gulp-sourcemaps');
+const imagemin = require('gulp-imagemin');
+const pngquant = require('imagemin-pngquant');
 
 gulp.task('default', 
   ['styles', 'lint', 'copy-html'],
@@ -22,11 +24,14 @@ gulp.task('default',
     browserSync.init({
       server: './dist'
     });
+    return gulp.src('src/images/*')
+      .pipe(imagemin({
+        progressive: true,
+        use: [pngquant()]
+      }))
+      .pipe(gulp.dest('dist/images'));
   });
 
-/* browserSync.init({
-  server: './'
-}); */
 browserSync.stream();
 
 gulp.task('styles', function () {
@@ -88,6 +93,7 @@ gulp.task('copy-html', function(){
 
 gulp.task('copy-images', function(){
   gulp.src('./img/*')
+    .pipe(imagemin())
     .pipe(gulp.dest('./dist/img'));
 });
 gulp.task('dist', [
