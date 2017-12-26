@@ -1,5 +1,5 @@
 function getWindowHeight() {
-	return window.innerHeight;
+  return window.innerHeight;
 }
 
 getWindowHeight();
