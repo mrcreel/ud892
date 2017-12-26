@@ -7,12 +7,15 @@ var eslint = require('gulp-eslint');
 var browserSync = require('browser-sync').create();
 var jasmine = require('gulp-jasmine-phantom');
 var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var babel = require('gulp-babel');
+var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('default', 
   ['styles', 'lint', 'copy-html'],
   function(){
-    gulp.watch('sass/**/*.scss', ['styles']);
-    gulp.watch('js/**/*.js', ['lint']);
+    gulp.watch('./sass/**/*.scss', ['styles']);
+    gulp.watch('./js/**/*.js', ['lint']);
     gulp.watch('./index.html', ['copy-html']);
     gulp.watch('./dist/index.html').on('change', browserSync.reload);
 
@@ -28,26 +31,29 @@ browserSync.stream();
 
 gulp.task('styles', function () {
   /* body... */
-  gulp.src('sass/**/*.scss')
+  gulp.src('./sass/**/*.scss')
     .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
     .pipe(autoprefixer({
       browsers: ['> 5%'] // 'last 2 versions' 
     }))
-    .pipe(gulp.dest('dist/css'));
+    .pipe(gulp.dest('./dist/css'));
 });
 
 gulp.task('scripts', function() {
   gulp.src('./js/**/*.js')
-    .pipe(concat('all.js'))
-    .pipe(gulp.dest('dist/js'));
-    
-
+    .pipe(babel())
+    .pipe(concat('./all.js'))
+    .pipe(gulp.dest('./dist/js'));
 });
 
 gulp.task('scripts-dist', function() {
   gulp.src('./js/**/*.js')
-    .pipe(concat('all.js'))
-    .pipe(gulp.dest('dist/js'));
+    .pipe(sourcemaps.init())
+    .pipe(babel())
+    .pipe(concat('./all.js'))
+    .pipe(uglify())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('./dist/js'));
 
 });
 gulp.task('lint', function(){
@@ -55,7 +61,7 @@ gulp.task('lint', function(){
   // So, it's best to have gulp ignore the directory as well. 
   // Also, Be sure to return the stream from the task; 
   // Otherwise, the task may end before the stream has finished. 
-  return gulp.src(['js/**/*.js','!node_modules/**'])
+  return gulp.src(['./js/**/*.js','!node_modules/**'])
   // eslint() attaches the lint output to the "eslint" property 
   // of the file object so it can be used by other modules. 
     .pipe(eslint())
@@ -71,7 +77,7 @@ gulp.task('tests', function(){
   gulp.src('./tests/spec/extraSpec.js')
     .pipe(jasmine({
       integration: true,
-      vendor: 'js/** *.js'
+      vendor: './js/** *.js'
     }));
 });
 
@@ -84,3 +90,10 @@ gulp.task('copy-images', function(){
   gulp.src('./img/*')
     .pipe(gulp.dest('./dist/img'));
 });
+gulp.task('dist', [
+  'copy-html',
+  'copy-images',
+  'styles',
+  'lint',
+  'scripts-dist'
+]);

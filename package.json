@@ -17,12 +17,17 @@
   },
   "homepage": "https://github.com/udacity/ud892#readme",
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "browser-sync": "^2.21.0",
     "eslint": "^4.14.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
+    "gulp-babel": "^7.0.0",
     "gulp-eslint": "^4.0.0",
-    "gulp-jasmine-phantom": "^3.0.0"
+    "gulp-jasmine-phantom": "^3.0.0",
+    "gulp-sourcemaps": "^2.6.2",
+    "gulp-uglify": "^3.0.0"
   },
   "dependencies": {
     "gulp-concat": "^2.6.1",
